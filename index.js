@@ -1,36 +1,32 @@
 const http = require('http')
 const fs = require('fs')
 const url = require('url')
+const express = require('express')
+const app = express()
 const port = process.env.PORT || 8000
+const router = express.Router()
 
-const server = http.createServer((req, res) => {
-  res.statusCode = 200
-  console.log('request made')
-  const pathname = url.parse(req.url).pathname
-  console.log(pathname)
-  if (pathname == 'favicon.ico') {
-    return null
-  }
-  if (pathname == '/') {
-    const data = fs.readFileSync('./index.html', 'utf8')
-    res.setHeader('Content-Type', 'text/html')
-    res.end(data)  
-    
-  } else if (pathname == '/about') {
-    const data = fs.readFileSync('./about.html', 'utf8')
-    res.setHeader('Content-Type', 'text/html')
-    res.end(data)
-  } else if (pathname == '/contact') {
-    const data = fs.readFileSync('./contact-me.html', 'utf8')
-    res.setHeader('Content-Type', 'text/html')
-    res.end(data)
-  } else {
-      const data = fs.readFileSync('./404.html', 'utf8')
-      res.setHeader('Content-Type', 'text/html')
-      res.end(data)  
-  }
+
+router.get('/', function(req, res) {
+  console.log('hi')
+  const data = fs.readFileSync('./index.html', 'utf8')
+  res.send(data)
 })
 
-server.listen(port, () => {
-  console.log(`Server running at port ${port}`)
+router.get('/about', function(req, res) {
+  const data = fs.readFileSync('./about.html', 'utf8')
+  res.send(data)
 })
+
+router.get('/contact', function(req, res) {
+  const data = fs.readFileSync('./contact-me.html', 'utf8')
+  res.send(data)
+})
+
+router.get('*', function(req, res) {
+  const data = fs.readFileSync('./404.html', 'utf8')
+  res.send(data)
+})
+
+app.use(router)
+app.listen(port)
